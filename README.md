@@ -1,69 +1,66 @@
 # CalTrack (Native iOS + Supabase)
 
-CalTrack is a native SwiftUI iOS app concept where you:
+CalTrack is a native SwiftUI iOS app where you:
 
-1. Take a photo of every meal/snack.
-2. Send the photo to an AI nutrition scanner.
-3. Save the nutrition snapshot to Supabase.
-4. Track calories and daily value (DV) nutrient progress over time.
-5. Receive push reminders so you do not forget to log food.
+1. Take a photo of each meal/snack.
+2. AI estimates calories + nutrients.
+3. Data is saved to Supabase.
+4. You track calories and daily-value progress over time.
+5. Push notifications remind you to stay consistent.
 
-## What is included in this repo
+## Design direction
 
-- `CalTrackIOS/` SwiftUI app skeleton:
-  - Authentication flow and tab layout.
-  - Meal capture UI using photo picker.
-  - Dashboard for calorie + nutrient progress.
-  - Local notification reminder scheduling.
-  - Service layer ready for Supabase integration.
-- `supabase/schema.sql` Postgres schema + RLS policies.
-- `supabase/functions/scan-meal/index.ts` Edge Function that calls OpenAI vision to estimate nutrition from meal photos.
+The app UI now follows a modern wellness look:
+- soft gray background,
+- rounded white cards,
+- green gradient hero + CTA buttons,
+- metrics-forward dashboard cards.
 
-## iOS architecture
+## Included in this repo
 
-- **Native app:** SwiftUI + Combine-style observable view models.
-- **Backend:** Supabase Auth + Postgres + Storage + Edge Functions.
-- **AI scan path:**
-  - Upload photo to Storage.
-  - Call edge function `scan-meal` with image URL.
-  - Edge function calls OpenAI Responses API with image input.
-  - Structured nutrition JSON is stored in `meal_entries.nutrition`.
+- `CalTrackIOS/` SwiftUI app scaffold with styled screens:
+  - Auth (`AuthView`)
+  - Meal scanner (`MealCaptureView`)
+  - Trends dashboard (`DashboardView`)
+  - Notification/settings profile (`SettingsView`)
+- `supabase/schema.sql` Postgres tables + RLS.
+- `supabase/functions/scan-meal/index.ts` edge function for AI scan.
+- `.env` template for Supabase/OpenAI keys.
+
+## Environment variables (`.env`)
+
+Create/update `.env` in repo root:
+
+```bash
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENAI_API_KEY=your_openai_api_key
+```
 
 ## Supabase setup
 
 1. Create a Supabase project.
 2. Run SQL in `supabase/schema.sql`.
-3. Create a private Storage bucket called `meal-photos`.
+3. Create private Storage bucket `meal-photos`.
 4. Deploy edge function:
 
    ```bash
    supabase functions deploy scan-meal
    ```
 
-5. Set edge function secret:
+5. Set secret for the edge function:
 
    ```bash
    supabase secrets set OPENAI_API_KEY=your_key
    ```
 
-## iOS app setup
+## iOS app wiring
 
-1. Create an Xcode iOS App project named `CalTrackIOS`.
-2. Copy files from `CalTrackIOS/` into your Xcode project.
-3. Add dependencies (Swift Package Manager):
-   - `supabase-swift` (https://github.com/supabase-community/supabase-swift)
-4. Add environment/config values:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-5. Add iOS capabilities:
+1. Create/open your Xcode iOS app target.
+2. Copy `CalTrackIOS/` files into the target.
+3. Add Swift package dependency:
+   - `supabase-swift` (`https://github.com/supabase-community/supabase-swift`)
+4. Wire TODOs in `SupabaseService` to real auth/storage/functions/database calls.
+5. Add capabilities:
    - Push Notifications
-   - Background Modes (remote notifications, if needed)
-6. Add `NSPhotoLibraryUsageDescription` to `Info.plist`.
-
-## Next implementation tasks
-
-- Replace `SupabaseService` TODOs with real `supabase-swift` calls.
-- Add camera capture (AVFoundation) in addition to photo picker.
-- Add weekly/monthly trend charts.
-- Add meal editing and manual overrides when AI estimate is off.
-- Add onboarding for daily calorie/macro goals and nutrient targets.
+   - Photo library usage permission

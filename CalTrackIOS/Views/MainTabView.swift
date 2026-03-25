@@ -5,18 +5,19 @@ struct MainTabView: View {
         TabView {
             MealCaptureView()
                 .tabItem {
-                    Label("Capture", systemImage: "camera")
+                    Label("Meals", systemImage: "camera.fill")
                 }
 
             DashboardView()
                 .tabItem {
-                    Label("Dashboard", systemImage: "chart.bar.xaxis")
+                    Label("Trends", systemImage: "chart.line.uptrend.xyaxis")
                 }
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label("Profile", systemImage: "person.crop.circle")
                 }
         }
+        .tint(CalTrackTheme.primary)
     }
 }
